@@ -1,7 +1,16 @@
 package main
 
-import "github.com/i-DarkLight/NRParser/first"
+import (
+	"github.com/i-DarkLight/NRParser/first"
+	"github.com/i-DarkLight/NRParser/follow"
+)
 
 func main() {
-	first.Find("A -> abs | ngb | BCD\nB -> ko | po | ~\nC -> qr | ju\nD -> l | ~")
+	first.FindAllTogether("A -> aAs | nCb | BcD | BDg\nB -> ko | pAo | ~\nC -> qr | jAu\nD -> l | ~")
+	follow.FindFollow()
+	println("================================")
+	for key, value := range follow.FollowMap {
+		println(key + " " + value)
+	}
+	println("================================")
 }
