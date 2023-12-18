@@ -7,6 +7,7 @@ import (
 
 var MapTerminal = make(map[string]string)
 var FirstList = make(map[string]string)
+var FirstErr = make(map[string]string)
 
 func eachLine(nonterm string, options string) string {
 	optionsList := strings.Split(options, " | ")
@@ -47,13 +48,7 @@ out:
 	FirstList[nonterm] = list
 	return list
 }
-func FindAllTogether(str string) {
-	lines := strings.Split(str, "\n")
-	//save non terminals as key and their respective options as value in a map
-	for _, elem := range lines {
-		pos := strings.Index(elem, "->")
-		MapTerminal[elem[:pos-1]] = elem[pos+3:]
-	}
+func FindAllTogether() {
 	//calculate all firsts
 	for key, value := range MapTerminal {
 		eachLine(key, value)
@@ -101,6 +96,29 @@ func finalCheck() {
 		FirstList[key] = res
 		res, temp = "", ""
 	}
+}
+func FindErr(str string) string {
+	var myslice []string
+	tmp := MapTerminal[str]
+	options := strings.Split(tmp, " | ")
+	for _, option := range options {
+		for _, letter := range option {
+			if unicode.IsUpper(letter) {
+				if strings.Contains(FirstErr[str],string(letter)){
+					continue
+				}
+				myslice = append(myslice, string(letter))
+				if strings.Contains(MapTerminal[string(letter)], "~") {
+					myslice = append(myslice, FindErr((string(letter))))
+				} 
+			} else {
+				break
+			}
+		}
+	}
+	res := strings.Join(myslice, " ")
+	FirstErr[str] = res
+	return res
 }
 
 // To calculate first of one given option
