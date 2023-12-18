@@ -1,9 +1,10 @@
 package follow
 
 import (
-	"github.com/i-DarkLight/NRParser/first"
 	"strings"
 	"unicode"
+
+	"github.com/i-DarkLight/NRParser/first"
 )
 
 var FollowMap = make(map[string]string)
@@ -61,7 +62,7 @@ func delDupes() {
 			}
 			temp += string(elem)
 			if !strings.Contains(res, string(elem)) {
-				res+=" "+string(elem)
+				res += " " + string(elem)
 			} else {
 				continue
 			}
