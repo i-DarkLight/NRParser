@@ -53,11 +53,14 @@ func FindAllTogether() {
 	for key, value := range MapTerminal {
 		eachLine(key, value)
 	}
+	//call function to recheck first calculation and fix results if there's any miscalculation
 	finalCheck()
 	for key, value := range FirstList {
 		println(key + "  " + value)
 	}
 }
+
+// function to see if a given option can completely generate lamda
 func testLamda(str string) bool {
 	for key, value := range MapTerminal {
 		if str == key {
@@ -97,29 +100,6 @@ func finalCheck() {
 		res, temp = "", ""
 	}
 }
-func FindErr(str string) string {
-	var myslice []string
-	tmp := MapTerminal[str]
-	options := strings.Split(tmp, " | ")
-	for _, option := range options {
-		for _, letter := range option {
-			if unicode.IsUpper(letter) {
-				if strings.Contains(FirstErr[str],string(letter)){
-					continue
-				}
-				myslice = append(myslice, string(letter))
-				if strings.Contains(MapTerminal[string(letter)], "~") {
-					myslice = append(myslice, FindErr((string(letter))))
-				} 
-			} else {
-				break
-			}
-		}
-	}
-	res := strings.Join(myslice, " ")
-	FirstErr[str] = res
-	return res
-}
 
 // To calculate first of one given option
 func FindOne(str string) string {
@@ -137,8 +117,7 @@ func FindOne(str string) string {
 			}
 		}
 	}
-	ret := temp
-	return ret
+	return temp
 }
 
 // function checks if a option can generate lamda

@@ -2,7 +2,6 @@ package follow
 
 import (
 	"strings"
-	"unicode"
 
 	"github.com/i-DarkLight/NRParser/first"
 )
@@ -10,9 +9,12 @@ import (
 var FollowMap = make(map[string]string)
 var AllOptions []string
 
-func setOptions() {
+func SetFollow() {
 	for _, value := range first.MapTerminal {
 		AllOptions = append(AllOptions, strings.Split(value, " | ")...)
+	}
+	for key := range first.MapTerminal {
+		FindFollow(key)
 	}
 }
 func returnNonterm(str string) (string, bool) {
@@ -23,51 +25,43 @@ func returnNonterm(str string) (string, bool) {
 	}
 	return "", false
 }
-func FindFollow() {
-	setOptions()
+func FindFollow(nonterm string) string {
+	var NormFollow []string
 	for _, option := range AllOptions {
 		for i, letter := range option {
-			if unicode.IsUpper(letter) {
-				if byte(letter) != option[len(option)-1] || !first.ReturnLamda(option[i+1:]) {
-					temp := FollowMap[string(letter)]
-					FollowMap[string(letter)] = temp + first.FindOne(option[i+1:])
-				}
-			}
-		}
-	}
-	for _, option := range AllOptions {
-		for i, letter := range option {
-			if unicode.IsUpper(letter) {
+			if string(letter) == nonterm {
+				temp := FollowMap[string(letter)]
+				temp += first.FindOne(option[i+1:])
+				NormFollow = append(NormFollow, temp)
 				if byte(letter) == option[len(option)-1] || first.ReturnLamda(option[i+1:]) {
-					nonterm, check := returnNonterm(option)
+					nonTerm, check := returnNonterm(option)
 					if check {
-						temp := FollowMap[string(letter)]
-						FollowMap[string(letter)] = temp + FollowMap[nonterm]
-					} else {
-						continue
+						temp := FollowMap[string(letter)] + FindFollow(nonTerm)
+						NormFollow = append(NormFollow, temp)
 					}
 				}
 			}
 		}
 	}
+	ls := strings.Join(NormFollow, " ")
+	FollowMap[nonterm] = ls
 	delDupes()
+	return ls
 }
 func delDupes() {
-	var temp string
 	var res string
 	for key, value := range FollowMap {
 		for _, elem := range value {
 			if elem == ',' || elem == '~' {
 				continue
 			}
-			temp += string(elem)
-			if !strings.Contains(res, string(elem)) {
-				res += " " + string(elem)
+			if !strings.Contains(res, string(elem)) && elem != ' ' {
+				res = res + " " + string(elem)
 			} else {
 				continue
 			}
 		}
 		FollowMap[key] = res
-		res, temp = "", ""
+		res = ""
 	}
 }
