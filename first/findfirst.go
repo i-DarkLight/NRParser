@@ -4,11 +4,14 @@ import (
 	"strings"
 	"unicode"
 )
-
+type FirstEachOption struct{
+	NonTerm string
+	Option string
+	First string
+}
 var MapTerminal = make(map[string]string)
 var FirstList = make(map[string]string)
-var FirstErr = make(map[string]string)
-
+var AllOptions []FirstEachOption
 func eachLine(nonterm string, options string) string {
 	optionsList := strings.Split(options, " | ")
 	var firstCollection []string
@@ -48,16 +51,13 @@ out:
 	FirstList[nonterm] = list
 	return list
 }
-func FindAllTogether() {
+func SetFirst() {
 	//calculate all firsts
 	for key, value := range MapTerminal {
 		eachLine(key, value)
 	}
 	//call function to recheck first calculation and fix results if there's any miscalculation
 	finalCheck()
-	for key, value := range FirstList {
-		println(key + "  " + value)
-	}
 }
 
 // function to see if a given option can completely generate lamda
@@ -75,6 +75,20 @@ func testLamda(str string) bool {
 	return false
 }
 
+// function to calculate first for each option
+func FirstOptions() {
+	for key, value := range MapTerminal {
+		options := strings.Split(value, " | ")
+		for _, v := range options {
+			temp:=FirstEachOption{
+				NonTerm: key,
+				Option: v,
+				First: FindOne(v),
+			}
+			AllOptions = append(AllOptions, temp)
+		}
+	}
+}
 // function to debug calculation of lamda
 func finalCheck() {
 	var temp string
