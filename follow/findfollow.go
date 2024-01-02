@@ -30,6 +30,10 @@ func FindFollow(nonterm string) string {
 	for _, option := range AllOptions {
 		for i, letter := range option {
 			if string(letter) == nonterm {
+				if nonterm == "A" {
+					temp := FollowMap["A"]
+					NormFollow = append(NormFollow, temp+"$")
+				}
 				temp := FollowMap[string(letter)]
 				temp += first.FindOne(option[i+1:])
 				NormFollow = append(NormFollow, temp)
